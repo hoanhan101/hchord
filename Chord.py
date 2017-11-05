@@ -10,7 +10,7 @@ import hashlib
 
 IP_ADDRESS = '127.0.0.1'
 PORT = 9000
-KEY_SPACE_SIZE = 16 # m
+KEY_SPACE_SIZE = 16 # m, number of row in finger_table
 
 class Node(object):
     def __init__(self, ID, IP_ADDRESS, PORT):
@@ -113,8 +113,4 @@ if __name__ == '__main__':
     print(chord_hash(data))
 
     node1 = Node(1, IP_ADDRESS, PORT)
-    print(node1.to_dict())
 
-    for i in range(5):
-        print(i)
-        println
