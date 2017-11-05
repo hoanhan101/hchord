@@ -9,7 +9,6 @@
 import hashlib
 
 m = 3
-counter = -1
 
 class Node:
     def __init__(self, IP, PORT):
