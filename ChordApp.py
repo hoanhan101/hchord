@@ -57,6 +57,7 @@ class ChordInstance(object):
                 including_start: bool
                 including_end: bool
         """
+        print('Node{0}.is_between(val={1},start={2},end={3},include_start={4},include_end={5})'.format(self.ID,value,start,end,including_start,including_end))
         if not including_start and not including_end:
             # not include both start and end
             if (start < value < end):
