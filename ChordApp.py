@@ -57,6 +57,7 @@ class ChordInstance(object):
                 including_start: bool
                 including_end: bool
         """
+        print('Node{0}.is_between(val={1},start={2},end={3},include_start={4},include_end={5})'.format(self.ID,value,start,end,including_start,including_end))
         if not including_start and not including_end:
             # not include both start and end
             if (start < value < end):
@@ -134,14 +135,16 @@ class ChordInstance(object):
         self.finger_table[0]['successor'].predecessor = self
         print('-> set predecessor of node {1} to {0}'.format(self.ID, self.finger_table[0]['successor'].ID))
         for i in range(1,m):
+            self.print_finger_table()
             if self.is_between(self.finger_table[i]['start'], self.ID, self.finger_table[i-1]['successor'].ID, including_start=True):
-                print('Node {0} is in [{1},{2})'.format(self.finger_table[i]['start'],self.ID,self.finger_table[i]['successor'].ID))
+                print('Value {0} is in [{1},{2})'.format(self.finger_table[i]['start'],self.ID,self.finger_table[i]['successor'].ID))
                 self.finger_table[i]['successor'] = self.finger_table[i-1]['successor']
                 print('-> updated the successor of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i,self.ID,self.finger_table[i-1]['successor'].ID))
             else:
-                print('Node {0} is not in [{1},{2})'.format(self.finger_table[i]['start'],self.ID,self.finger_table[i]['successor'].ID))
+                print('Value {0} is not in [{1},{2})'.format(self.finger_table[i]['start'],self.ID,self.finger_table[i]['successor'].ID))
                 self.finger_table[i]['successor'] = NODE.find_successor(self.finger_table[i]['start'])
                 print('-> updated the successor of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i,self.ID,NODE.find_successor(self.finger_table[i-1]['start'])))
+        self.print_finger_table()
 
     def update_others(self):
         print('Node{0}.update_others(): update finger_table of other nodes'.format(self.ID))
@@ -161,6 +164,7 @@ class ChordInstance(object):
         return temp
 
     def update_finger_table(self, NODE, i):
+        print('Node{0}.update_finger_table({1}, {2})'.format(self.ID, NODE.ID, i))
         if self.is_between(NODE.ID,self.ID, self.finger_table[i]['successor'].ID, including_start=True):
             self.finger_table[i]['successor'] = NODE
             p = self.predecessor
