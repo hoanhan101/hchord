@@ -32,7 +32,7 @@ class ChordInstance(object):
         finger_table = []
         for i in range(0,m):
             finger_table.append({})
-            finger_table[i]['start'] = self.NODE.ID + (2**i)
+            finger_table[i]['start'] = self.constrain(self.NODE.ID + (2**i))
         for i in range(0,m):
             finger_table[i]['range_start'] = finger_table[i]['start']
             if (i != m - 1):
@@ -42,6 +42,16 @@ class ChordInstance(object):
             finger_table[i]['successor'] = self
         return finger_table
 
+    def constrain(self,value):
+        temp = 0
+        size = 2**m
+        if value < 0:
+            temp = size + value
+        elif value > size-1:
+            temp = value - size
+        else:
+            temp = value
+        return temp
 
     def print_finger_table(self):
         print('finger_table of node {0}'.format(self.ID))
@@ -64,6 +74,8 @@ class ChordInstance(object):
             if (start < value < end):
                 return True
             elif (start > end) and (start < value <= (2**m - 1) or 0 <= value < end):
+                return True
+            elif (start == end):
                 return True
             return False
         elif not including_start and including_end:
@@ -112,7 +124,9 @@ class ChordInstance(object):
 
     def closest_preceding_node(self, ID):
         print('Node{0}.closest_preceding_node({1}): finding closest_preceding_node of ID {2}'.format(self.ID,ID,ID))
-        for i in range(m-1, 0, -1):    # from i = m downto 1
+        n = m-1
+        for i in range(n, -1, -1):    # from i = m downto 1
+            print(' -> i = {0}'.format(i))
             if self.is_between(self.finger_table[i]['successor'].ID, self.ID, ID):
                 return self.finger_table[i]['successor']
         return self
@@ -130,17 +144,11 @@ class ChordInstance(object):
     def init_finger_table(self, NODE):
         print('Node{0}.init_finger_table({1}): init finger_table of node {2}'.format(self.ID,NODE.ID,self.ID))
         self.finger_table[0]['successor'] = NODE.find_successor(self.finger_table[0]['start'])
-        # self.successor = NODE.find_successor(self.finger_table[0]['start'])
-        # NODE.successor = self
+        self.successor = self.finger_table[0]['successor']
         print('-> updated successor of finger_table[0][\'successor\'] of node {0} to {1}'.format(self.ID,self.finger_table[0]['successor'].ID))
-        self.predecessor = self.finger_table[0]['successor'].predecessor
-        #self.predecessor = self.successor.predecessor
+        self.predecessor = self.successor.predecessor
+        self.successor.predecessor = self
         print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
-        self.finger_table[0]['successor'].predecessor = self
-        #self.successor.predecessor = NODE
-        # set successor of 3 to 1 and 1 to 3
-        self.successor = self.predecessor
-        self.predecessor.successor = self
         print('-> set predecessor of node {1} to {0}'.format(self.ID, self.finger_table[0]['successor'].ID))
         for i in range(0,m-1):
             self.print_finger_table()
@@ -158,24 +166,17 @@ class ChordInstance(object):
     def update_others(self):
         print('Node{0}.update_others(): update finger_table of other nodes'.format(self.ID))
         for i in range(0,m):
-            val = self.reverse_count(self.ID - 2**(i))
+            val = self.constrain(self.ID - 2**(i))
             print('find predecessor of={1}, val={0}'.format(val, self.ID - 2**(i)))
-            p = self.find_predecessor(self.reverse_count(self.ID - 2**i))
+            p = self.find_predecessor(self.constrain(self.ID - 2**i))
             print('predecessor of {0} is {1}'.format(val, p.ID))
             p.update_finger_table(self, i)
-
-    def reverse_count(self, value):
-        temp = 0
-        if value < 0:
-            temp = (2**m) + value
-        else:
-            temp = value
-        return temp
 
     def update_finger_table(self, NODE, i):
         print('Node{0}.update_finger_table({1}, {2})'.format(self.ID, NODE.ID, i))
         #if self.is_between(NODE.ID,self.ID, self.finger_table[i]['successor'].ID, including_start=True):
-        if self.is_between(NODE.ID,self.finger_table[i]['range_start'], self.finger_table[i]['range_end'], including_start=True):
+        if self.is_between(NODE.ID,self.finger_table[i]['start'], self.finger_table[i]['successor'].ID, including_start=True):
+        #if self.is_between(NODE.ID,self.finger_table[i]['range_start'], self.finger_table[i]['range_end'], including_start=True):
             self.finger_table[i]['successor'] = NODE
             print('-> updated the value of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i,self.ID,NODE.ID))
             p = self.predecessor
