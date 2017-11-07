@@ -211,10 +211,8 @@ class ChordInstance(object):
 
         print('Node{0}.update_others(): update finger_table of other nodes'.format(self.ID))
         for i in range(0, m):
-            print(">>> when i = {0} then ".format(i))
-            # print('find predecessor of={1}, val={0}'.format(val, self.ID - 2**(i)))
             p = self.find_predecessor(self.reverse_count(self.ID - 2**i))
-            print("p = {0}".format(p.ID))
+            print("> When i = {0}, p = {1}".format(i, p.ID))
             p.update_finger_table(self, i)
 
         print(">>> DONE UPDATING OTHERS")
@@ -226,23 +224,28 @@ class ChordInstance(object):
         :param i: Index of a finger table
         :return: None
         """
-        print(">>> START UPDATE FINGER TABLE")
-        print(">> BEFORE UPDATE")
+        print("")
+        print(">> NODE {0} BEFORE UPDATE".format(self.ID))
         self.print_finger_table()
 
         print('>> Node{0}.update_finger_table({1}, {2})'.format(self.ID, NODE.ID, i))
+
         if self.is_between(NODE.ID, self.ID, self.finger_table[i]['successor'].ID, including_start=True):
-            print("> Yes. Because {0} in [{1}, {2}), change finger_table[{3}]['successor'] to {4}".format(NODE.ID, self.ID, self.finger_table[i]['successor'].ID,
+            print("> Because {0} in [{1}, {2}), change finger_table[{3}]['successor'] to {4}".format(NODE.ID, self.ID, self.finger_table[i]['successor'].ID,
                                                                                      i, NODE.ID))
             self.finger_table[i]['successor'] = NODE
 
+            print(">> AFTER UPDATE")
             self.print_finger_table()
 
             p = self.predecessor
+            print(">> Now set predecessor = {0} to {1}".format(self.predecessor.ID, p.ID))
 
             p.update_finger_table(NODE, i)
+            print('>> Node{0}.update_finger_table({1}, {2})'.format(p.ID, NODE.ID, i))
+
         else:
-            print("> No. {0} is NOT in [{1}, {2})".format(NODE.ID, self.ID, self.finger_table[i]['successor'].ID))
+            print("> Because {0} is NOT in [{1}, {2}), don't do anything".format(NODE.ID, self.ID, self.finger_table[i]['successor'].ID))
 
         print(">>> DONE UPDATE FINGER TABLE")
 
@@ -274,7 +277,7 @@ if __name__ == '__main__':
 
 
 
-    print(chord1.is_between(3,1,3, including_start=True))
+    # print(chord1.is_between(3,1,3, including_start=True))
     # print(chord1.is_between(0,6,1,including_start=True))
     # print(chord1.is_between(5,6,1,including_start=True))
     # print(chord1.is_between(3,3,7,including_start=True, including_end=True))
