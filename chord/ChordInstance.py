@@ -190,17 +190,32 @@ class ChordInstance(object):
 
 
 if __name__ == '__main__':
-    chord1 = ChordInstance('0.0.0.0', 9000)
-    chord2 = ChordInstance('192.168.1.1', 9002)
-    chord3 = ChordInstance('192.168.1.1', 9003)
-    chord4 = ChordInstance('192.168.1.1', 9006)
+    NUMBER_OF_NODES = 32
 
-    chord1.join(None)
-    chord2.join(chord1)
-    chord3.join(chord1)
-    chord4.join(chord1)
+    chord_instance_list = []
+    ID_list = []
 
-    chord1.print_finger_table()
-    chord2.print_finger_table()
-    chord3.print_finger_table()
-    chord4.print_finger_table()
+    temp_address = '0.0.0.0'
+    temp_port = 0
+
+    startup_chord_instance = ChordInstance(temp_address, temp_port)
+    startup_chord_instance.join(None)
+    chord_instance_list.append(startup_chord_instance)
+
+    for i in range(NUMBER_OF_NODES - 1):
+        temp_port += 1
+        temp_chord_instance = ChordInstance(temp_address, temp_port)
+        chord_instance_list.append(temp_chord_instance)
+        temp_chord_instance.join(startup_chord_instance)
+
+    print("")
+    print("============ <AFTER JOIN> ============")
+    print("")
+
+    for chord_instance in chord_instance_list:
+        if chord_instance.ID not in ID_list:
+            ID_list.append(chord_instance.ID)
+
+        chord_instance.print_finger_table()
+
+    print(sorted(ID_list))
