@@ -34,21 +34,67 @@ class Node:
 
     def to_dict(self):
         print("ID: {0}, IP: {1}, PORT: {2}".format(self.ID, self.IP, self.PORT))
+
+        # Print Finger Table
         for i in self.finger_table:
-            print(i)
+            print('{0} | [{1}, {2}) | {3}'.format(i['start_value'], i['range_start'], i['range_end'], i['successor']))
 
-    def join(self, Node=None):
-        if Node:
-            print("ID: {0}, IP: {1}, PORT: {2} is joining".format(self.ID, self.IP, self.PORT))
+    def is_between(self, value, start, end, including_start=False, including_end=False):
+        """
+        Check if value in the range.
+        :param value:
+        :param value:
+        :param value:
+        :return: True if value is in the range
+        """
+        print('Node {0}.is_between(val={1}, start={2}, end={3}, include_start={4}, include_end={5})'.format(self.ID, value,
+                                                                                                       start, end,
+                                                                                                       including_start,
+                                                                                                       including_end))
+        if not including_start and not including_end:
+            # not include both start and end
+            if (start < value < end):
+                return True
+            elif (start > end) and (start < value <= (2 ** m - 1) or 0 <= value < end):
+                return True
+            return False
+        elif not including_start and including_end:
+            # include end but not the start
+            # print("not including_start and including_end passed_2")
+            if (start == end):
+                return True
+            elif (start < value <= end):
+                return True
+            elif (start > end) and ((start < value <= (2 ** m - 1)) or (0 <= value <= end)):
+                return True
+            return False
+        elif including_start and not including_end:
+            # include start but not the end
+            if (start <= value < end):
+                return True
+            elif (start > end) and (start <= value <= (2 ** m - 1) or 0 <= value < end):
+                return True
+            elif (start == end):
+                return True
+            return False
         else:
-            print("NO")
-
-    def find_successor(self, ID):
-        return
+            # include both start and end
+            if (start <= value <= end):
+                return True
+            elif (start > end) and (start <= value <= (2 ** m - 1) or 0 <= value <= end):
+                return True
+            elif (start == end):
+                return True
+        return False
 
 def chord_hash(input_string):
     """
-    Use SHA-1 hash to hash a string, convert it to integer and shift right (160 - m) places
+    Use SHA-1 hash to hash a string, return a value that in the range 2^m
+
+    Steps:
+    - Hash a string to get hex string
+    - Convert it to integer
+    - Shift right (160 - m) places
 
     Why shifting right (160 - m) places:
         - Shifting right m places equals to dividing 2^m.
@@ -66,26 +112,12 @@ def chord_hash(input_string):
     return hash_integer_value
 
 
-# This code is not working when target value = 5 and range = [7, 6]
-# Find way to check circular list?
-def is_between(target_value, start_value, end_value):
-    """
-    Check if target value in the range of [start_value, end_value)
-    :param target_value:
-    :param start_value:
-    :param end_value:
-    :return: True if target value is in the range
-    """
-    if target_value >= start_value and target_value < end_value:
-        return True
-    return False
 
 if __name__ == '__main__':
     node_1 = Node('0.0.0.0', 9000)
     node_1.to_dict()
 
     node_2 = Node('192.168.1.1', 9001)
-    # node_2.join(node_1)
     node_2.to_dict()
 
     # node_3 = Node('192.168.0.0', 9002)
