@@ -218,4 +218,10 @@ if __name__ == '__main__':
 
         chord_instance.print_finger_table()
 
+    if NUMBER_OF_NODES == len(ID_list):
+        print("ID IS WELL DISTRIBUTED")
+    else:
+        print("There exists collisions")
+
     print(sorted(ID_list))
+
