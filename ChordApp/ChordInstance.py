@@ -5,10 +5,10 @@
             Hoanh An
     Date: 10/30/2017
 """
-
 from node import Node
+from utils import *
 
-m = 3   # KEY_SPACE_SIZE (max 64)
+from const import m
 
 class ChordInstance(object):
     """
@@ -35,16 +35,9 @@ class ChordInstance(object):
         finger_table = []
         for i in range(0,m):
             finger_table.append({})
-            finger_table[i]['start'] = self.constrain(self.NODE.ID + (2**i))
+            finger_table[i]['start'] = constrain(self.NODE.ID + (2**i))
             finger_table[i]['successor'] = self
         return finger_table
-
-    def constrain(self,value):
-        """
-            Returns a value modulo 2^m. Used to wrap the value between 0 and 2^m.
-        """
-        size = 2**m
-        return (value%size)
 
     def print_finger_table(self):
         """
@@ -53,58 +46,6 @@ class ChordInstance(object):
         print('finger_table of node {0}'.format(self.ID))
         for i in range (0,m):
             print(self.finger_table[i]['start'], self.finger_table[i]['successor'].ID)
-
-    def is_between(self,value, start, end, including_start=False, including_end=False):
-        """
-            Checks if a given value is in the range start to end while considering
-            given options, i.e., including/excluding start and/or end of the range.
-            params:
-                start: int
-                end: int
-                including_start: bool, default value = False
-                including_end: bool, default value = False
-        """
-        print('Node{0}.is_between(val={1},start={2},end={3},include_start={4},include_end={5})'.format(self.ID,value,start,end,including_start,including_end))
-        if not including_start and not including_end:
-            # not include both start and end
-            if (start < value < end):
-                return True
-            elif (start > end) and (start < value <= (2**m - 1) or 0 <= value < end):
-                return True
-            elif (start == end) and (value != start):
-                return True
-            return False
-        elif not including_start and including_end:
-            # include end but not the start
-            if value == end:
-                return True
-            elif (start < value <= end):
-                return True
-            elif (start > end) and ((start < value <= (2**m - 1)) or (0 <= value <= end)):
-                return True
-            elif (start == end) and (value != start):
-                return True
-            return False
-        elif including_start and not including_end:
-            # include start but not the end
-            if value == start:
-                return True
-            elif (start <= value < end):
-                return True
-            elif (start > end) and (start <= value <= (2**m - 1) or 0 <= value < end):
-                return True
-            elif (start == end) and (value != end):
-                return False
-            return False
-        else:
-            # include both start and end
-            if (start <= value <= end):
-                return True
-            elif (start > end) and (start <= value <= (2**m - 1) or 0 <= value <= end):
-                return True
-            elif start == end:
-                return True
-            return False
 
     def find_successor(self, ID):
         print('Node{0}.find_successor({1}): finding successor of ID {2}'.format(self.ID,ID,ID))
@@ -115,7 +56,7 @@ class ChordInstance(object):
     def find_predecessor(self,ID):
         print('Node{0}.find_predecessor({1}): finding predecessor of ID {2}'.format(self.ID,ID,ID))
         n0 = self
-        while not self.is_between(ID, n0.ID, n0.finger_table[0]['successor'].ID, including_end=True):
+        while not is_between(ID, n0.ID, n0.finger_table[0]['successor'].ID, including_end=True):
             n0 = n0.closest_preceding_node(ID)
         print('-> Predecessor: {0}'.format(n0.ID))
         return n0
@@ -125,7 +66,7 @@ class ChordInstance(object):
         n = m-1
         for i in range(n, -1, -1):    # from i = m-1 downto 0
             print(' -> i = {0}'.format(i))
-            if self.is_between(self.finger_table[i]['successor'].ID, self.ID, ID):
+            if is_between(self.finger_table[i]['successor'].ID, self.ID, ID):
                 return self.finger_table[i]['successor']
         return self
 
@@ -158,7 +99,7 @@ class ChordInstance(object):
         for i in range(0,m-1):
             print('i = {0}'.format(i))
             self.print_finger_table()
-            if self.is_between(self.finger_table[i+1]['start'], self.ID, self.finger_table[i]['successor'].ID, including_start=True):
+            if is_between(self.finger_table[i+1]['start'], self.ID, self.finger_table[i]['successor'].ID, including_start=True):
                 print('Value {0} is in [{1},{2}]'.format(self.finger_table[i+1]['start'],self.ID,self.finger_table[i]['successor'].ID))
                 self.finger_table[i+1]['successor'] = self.finger_table[i]['successor']
                 print('-> updated the successor of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i+1,self.ID,self.finger_table[i]['successor'].ID))
@@ -170,7 +111,7 @@ class ChordInstance(object):
     def update_others(self):
         print('Node{0}.update_others(): update finger_table of other nodes'.format(self.ID))
         for i in range(0,m):
-            val = self.constrain(self.ID - 2**(i))
+            val = constrain(self.ID - 2**(i))
             print('find predecessor of={1}, val={0}'.format(val, self.ID - 2**(i)))
             p = self.find_predecessor(val)
             print('predecessor of {0} is {1}'.format(val, p.ID))
@@ -183,7 +124,7 @@ class ChordInstance(object):
 
     def update_finger_table(self, NODE, i):
         print('Node{0}.update_finger_table({1}, {2})'.format(self.ID, NODE.ID, i))
-        if self.is_between(NODE.ID,self.finger_table[i]['start'], self.finger_table[i]['successor'].ID, including_start=True):
+        if is_between(NODE.ID,self.finger_table[i]['start'], self.finger_table[i]['successor'].ID, including_start=True):
             self.finger_table[i]['successor'] = NODE
             print('-> updated the value of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i,self.ID,NODE.ID))
             p = self.predecessor
@@ -191,7 +132,6 @@ class ChordInstance(object):
                 print('@update_finger_table: p = {0}'.format(p.ID))
                 p.update_finger_table(NODE, i)
                 self.print_finger_table()
-
 
 
 
@@ -218,11 +158,6 @@ if __name__ == '__main__':
     # chord4.join(chord2)
     # chord5.join(chord4)
     # chord6.join(chord3)
-    # # print(chord1.is_between(7,6,1))
-    # # print(chord1.is_between(0,6,1,including_start=True))
-    # # print(chord1.is_between(5,6,1,including_start=True))
-    # # print(chord1.is_between(3,3,7,including_start=True, including_end=True))
-    # # print(chord1.is_between(3,4,2,including_start=True))
     chord1.print_finger_table()
     chord2.print_finger_table()
     chord3.print_finger_table()
