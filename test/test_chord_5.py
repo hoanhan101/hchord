@@ -48,7 +48,7 @@ class ChordInstance(object):
         finger_table = []
         for i in range(0, m):
             finger_table.append({})
-            finger_table[i]['start'] = self.NODE.ID + (2**i)
+            finger_table[i]['start'] = self.constrain(self.NODE.ID + (2 ** i))
         for i in range(0, m):
             finger_table[i]['range_start'] = finger_table[i]['start']
             if (i != m - 1):
@@ -57,6 +57,17 @@ class ChordInstance(object):
                 finger_table[i]['range_end'] = self.NODE.ID
             finger_table[i]['successor'] = self
         return finger_table
+
+    def constrain(self,value):
+        temp = 0
+        size = 2**m
+        if value < 0:
+            temp = size + value
+        elif value > size-1:
+            temp = value - size
+        else:
+            temp = value
+        return temp
 
     def print_finger_table(self):
         print('Node {0}: Successor = {1}, Predecessor = {2}'.format(self.ID, self.successor.ID, self.predecessor.ID))
@@ -75,9 +86,11 @@ class ChordInstance(object):
         """
         # print('Node{0}.is_between(val={1},start={2},end={3},include_start={4},include_end={5})'.format(self.ID,value,start,end,including_start,including_end))
         if not including_start and not including_end:
-            if start < value < end:
+            if (start < value < end):
                 return True
             elif (start > end) and (start < value <= (2**m - 1) or 0 <= value < end):
+                return True
+            elif (start == end):
                 return True
             return False
         elif not including_start and including_end:
@@ -137,7 +150,9 @@ class ChordInstance(object):
         :return: ID's closest preceding node
         """
         # print('Node{0}.closest_preceding_node({1}): finding closest_preceding_node of ID {2}'.format(self.ID,ID,ID))
-        for i in range(m - 1, 0, -1):    # from i = m down to 1
+        n = m-1
+        for i in range(n, -1, -1):    # from i = m downto 1
+            print(' -> i = {0}'.format(i))
             if self.is_between(self.finger_table[i]['successor'].ID, self.ID, ID):
                 return self.finger_table[i]['successor']
         return self
@@ -153,7 +168,7 @@ class ChordInstance(object):
         print('Node{0}.join({1}): joining {2} to {3}'.format(self.ID,NODE.ID,self.ID,NODE.ID))
         if (NODE.ID != None):
             self.init_finger_table(NODE)
-            self.update_others()
+            # self.update_others()
         else:
             for i in range(0, m):
                 self.finger_table[i]['successor'] = self
@@ -174,13 +189,16 @@ class ChordInstance(object):
         self.finger_table[0]['successor'] = NODE.find_successor(self.finger_table[0]['start'])
         print('-> updated successor of finger_table[0][\'successor\'] of node {0} to {1}'.format(self.ID,self.finger_table[0]['successor'].ID))
 
-        self.predecessor = self.finger_table[0]['successor'].predecessor
-        print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
+        self.successor = self.finger_table[0]['successor']
+        self.predecessor = self.successor.predecessor
+        self.successor.predecessor = self
 
-        self.finger_table[0]['successor'].predecessor = self
+        # self.predecessor = self.finger_table[0]['successor'].predecessor
+        # print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
 
-        # why?
-        self.successor = self.predecessor
+        # self.finger_table[0]['successor'].predecessor = self
+
+        # self.successor = self.predecessor
         self.predecessor.successor = self
 
         print('-> set predecessor of node {1} to {0}'.format(self.ID, self.finger_table[0]['successor'].ID))
@@ -211,7 +229,8 @@ class ChordInstance(object):
 
         print('Node{0}.update_others(): update finger_table of other nodes'.format(self.ID))
         for i in range(0, m):
-            p = self.find_predecessor(self.reverse_count(self.ID - 2**i))
+            val = self.constrain(self.ID - 2 ** (i))
+            p = self.find_predecessor(self.constrain(self.ID - 2 ** i))
             print("> When i = {0}, p = {1}".format(i, p.ID))
             p.update_finger_table(self, i)
 
@@ -283,3 +302,11 @@ if __name__ == '__main__':
     # print(chord1.is_between(3,3,7,including_start=True, including_end=True))
     # print(chord1.is_between(3,4,2,including_start=True))
 
+    print(chord1.find_successor(2).ID)
+    print(chord1.find_successor(3).ID)
+    print(chord1.find_successor(5).ID)
+
+
+    # TODO:
+    # test find successor
+    # try with 2 nodes

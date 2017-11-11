@@ -67,8 +67,8 @@ def chord_hash(input_string):
         - Shifting right m places equals to dividing 2^m.
         - Given m and a value 2^160, in order to find 2^m, need to need to divide 2^160 by 2^(160-m)
 
-    :param input_string: String to hash
-    :return: Hash of the string
+    :param input_string: String
+    :return: String
     """
     h = hashlib.sha1()  # 160 bit string
     encoded_data = input_string.encode('utf-8')
