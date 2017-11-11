@@ -8,4 +8,4 @@
     Date: 10/30/2017
 """
 
-m = 3   # KEY_SPACE_SIZE (max 64)
+m = 16   # KEY_SPACE_SIZE (max 64)

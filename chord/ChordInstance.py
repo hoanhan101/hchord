@@ -17,17 +17,17 @@ class ChordInstance(object):
     Each Chord Instance contains the information about its node and maintains
     a finger table, its successor, and its predecessor.
     """
-    def __init__(self, IP_ADDRESS, PORT, ID):
+    def __init__(self, IP_ADDRESS, PORT):
         """
         Initialize a ChordInstance.
-        :param IP_ADDRESS: String.
+        :param IP_ADDRESS: String
         :param PORT: Int
         :param ID: Int
         """
         self.IP_ADDRESS = IP_ADDRESS
         self.PORT = PORT
-        self.NODE = Node(IP_ADDRESS, PORT, ID)
-        self.ID = ID
+        self.NODE = Node(IP_ADDRESS, PORT)
+        self.ID = self.NODE.ID
         self.finger_table = self.create_finger_table()
 
         # set own successor and predecessor to self, i.e., the node is unattached
@@ -55,6 +55,7 @@ class ChordInstance(object):
         :return: None
         """
         print('finger_table of node {0}'.format(self.ID))
+        print("successor: {0}, predecessor: {1}".format(self.successor.ID, self.predecessor.ID))
         for i in range (0,m):
             print(self.finger_table[i]['start'], self.finger_table[i]['successor'].ID)
 
@@ -89,9 +90,8 @@ class ChordInstance(object):
         :return: Node
         """
         print('Node{0}.closest_preceding_node({1}): finding closest_preceding_node of ID {2}'.format(self.ID,ID,ID))
-        n = m-1
         # from i = m-1 down to 0
-        for i in range(n, -1, -1):
+        for i in range(m - 1, -1, -1):
             print(' -> i = {0}'.format(i))
             if is_between(self.finger_table[i]['successor'].ID, self.ID, ID):
                 return self.finger_table[i]['successor']
@@ -109,6 +109,8 @@ class ChordInstance(object):
         if (NODE != None):
             self.init_finger_table(NODE)
             self.update_others()
+
+            # MARK!!! DO WE NEED THIS?
             for i in range(1,m):
                 self.predecessor.update_finger_table(self,i)
         else:
@@ -129,6 +131,7 @@ class ChordInstance(object):
         self.predecessor = self.successor.predecessor
         self.successor.predecessor = self
 
+        # MARK!!! WHY???
         self.predecessor.successor = self
         self.predecessor.finger_table[0]['successor'] = self
         print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
@@ -187,36 +190,17 @@ class ChordInstance(object):
 
 
 if __name__ == '__main__':
-    chord1 = ChordInstance('0.0.0.0', 9000, 4)
-    chord2 = ChordInstance('127.0.0.1', 9001, 0)
-    chord3 = ChordInstance('192.168.1.1', 9002, 1)
-    # chord4 = ChordInstance('192.168.1.1', 9003, 13)
-    # chord5 = ChordInstance('192.168.1.1', 9004, 255)
-    # chord6 = ChordInstance('192.168.1.1', 9005, 35000)
-    # chord1.print_finger_table()
-    # chord2.print_finger_table()
-    # chord3.print_finger_table()
-    # chord4.print_finger_table()
+    chord1 = ChordInstance('0.0.0.0', 9000)
+    chord2 = ChordInstance('192.168.1.1', 9002)
+    chord3 = ChordInstance('192.168.1.1', 9003)
+    chord4 = ChordInstance('192.168.1.1', 9006)
+
     chord1.join(None)
     chord2.join(chord1)
-    # chord1.print_finger_table()
-    # chord2.print_finger_table()
-    # #print('successor of node 1 = {0}'.format(chord1.successor.ID))
-    chord3.join(chord2)
-    # chord1.print_finger_table()
-    # chord2.print_finger_table()
-    # chord3.print_finger_table()
-    # chord4.join(chord2)
-    # chord5.join(chord4)
-    # chord6.join(chord3)
+    chord3.join(chord1)
+    chord4.join(chord1)
+
     chord1.print_finger_table()
     chord2.print_finger_table()
     chord3.print_finger_table()
-    # chord4.print_finger_table()
-    # chord5.print_finger_table()
-    # chord6.print_finger_table()
-    # nodes = [chord1,chord2,chord3,chord4,chord5,chord6]
-    # for node in nodes:
-    #     print(' >> Node {0}\'s successor is node {1}.'.format(node.ID,node.successor.ID))
-    # print(chord1.finger_table[0]['successor'].ID)
-    # print(chord1.successor.ID)
+    chord4.print_finger_table()

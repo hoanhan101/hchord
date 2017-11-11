@@ -8,7 +8,27 @@
     Date: 10/30/2017
 """
 
+import hashlib
 from const import m
+
+def chord_hash(input_string):
+    """
+    Use SHA-1 hash to hash a string, convert it to integer and shift right (160 - m) places
+
+    Why shifting right (160 - m) places:
+        - Shifting right m places equals to dividing 2^m.
+        - Given m and a value 2^160, in order to find 2^m, need to need to divide 2^160 by 2^(160-m)
+
+    :param input_string: String
+    :return: String
+    """
+    h = hashlib.sha1()  # 160 bit string
+    encoded_data = input_string.encode('utf-8')
+    h.update(encoded_data)
+    hex_string = h.hexdigest()
+    hex_value = int(hex_string, 16)
+    hash_integer_value = hex_value >> (160 - m)
+    return hash_integer_value
 
 def constrain(value):
     """
