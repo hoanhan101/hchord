@@ -194,6 +194,7 @@ if __name__ == '__main__':
 
     chord_instance_list = []
     ID_list = []
+    collisions = 0
 
     temp_address = '0.0.0.0'
     temp_port = 0
@@ -205,23 +206,34 @@ if __name__ == '__main__':
     for i in range(NUMBER_OF_NODES - 1):
         temp_port += 1
         temp_chord_instance = ChordInstance(temp_address, temp_port)
-        chord_instance_list.append(temp_chord_instance)
-        temp_chord_instance.join(startup_chord_instance)
+
+        # If there already exists ID, pass. Otherwise, join.
+        if temp_chord_instance.ID not in ID_list:
+            ID_list.append(temp_chord_instance.ID)
+            chord_instance_list.append(temp_chord_instance)
+            temp_chord_instance.join(startup_chord_instance)
+        else:
+            collisions += 1
 
     print("")
     print("============ <AFTER JOIN> ============")
     print("")
 
+    # Print fingers of all successful ChordInstance
     for chord_instance in chord_instance_list:
-        if chord_instance.ID not in ID_list:
-            ID_list.append(chord_instance.ID)
-
         chord_instance.print_finger_table()
 
-    if NUMBER_OF_NODES == len(ID_list):
+    # Collisions status
+    if collisions == 0:
         print("ID IS WELL DISTRIBUTED")
     else:
-        print("There exists collisions")
+        print("There exists {0} collisions".format(collisions))
 
+    # Print out the sorted ID list
     print(sorted(ID_list))
 
+    # Check the number of successful instances
+    successful_instances = (NUMBER_OF_NODES - 1) - collisions
+
+    if len(ID_list) == successful_instances:
+        print("Correct")
