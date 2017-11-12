@@ -11,6 +11,7 @@
 from node import Node
 from utils import *
 from const import m
+from random import randint
 
 class ChordInstance(object):
     """
@@ -188,6 +189,24 @@ class ChordInstance(object):
                 self.print_finger_table()
 
 
+def generate_random_IP():
+    START_RANGE = 0
+    END_RANGE = 255
+
+    random_int_1 = randint(START_RANGE, END_RANGE)
+    random_int_2 = randint(START_RANGE, END_RANGE)
+    random_int_3 = randint(START_RANGE, END_RANGE)
+    random_int_4 = randint(START_RANGE, END_RANGE)
+
+    random_IP = "{0}.{1}.{2}.{3}".format(random_int_1, random_int_2, random_int_3, random_int_4)
+    return random_IP
+
+def generate_random_port():
+    START_RANGE = 0
+    END_RANGE = 65535
+
+    random_port_number = randint(START_RANGE, END_RANGE)
+    return random_port_number
 
 if __name__ == '__main__':
     NUMBER_OF_NODES = 32
@@ -196,16 +215,17 @@ if __name__ == '__main__':
     ID_list = []
     collisions = 0
 
-    temp_address = '0.0.0.0'
-    temp_port = 0
+    startup_IP = '0.0.0.0'
+    startup_port = 0
 
-    startup_chord_instance = ChordInstance(temp_address, temp_port)
+    startup_chord_instance = ChordInstance(startup_IP, startup_port)
     startup_chord_instance.join(None)
     chord_instance_list.append(startup_chord_instance)
 
     for i in range(NUMBER_OF_NODES - 1):
-        temp_port += 1
-        temp_chord_instance = ChordInstance(temp_address, temp_port)
+        temp_IP = generate_random_IP()
+        temp_port = generate_random_port()
+        temp_chord_instance = ChordInstance(temp_IP, temp_port)
 
         # If there already exists ID, pass. Otherwise, join.
         if temp_chord_instance.ID not in ID_list:
@@ -237,3 +257,4 @@ if __name__ == '__main__':
 
     if len(ID_list) == successful_instances:
         print("Correct")
+
