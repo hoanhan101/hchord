@@ -1,7 +1,7 @@
 #!usr/bin/env python3
 
 """
-    ChordInstance.py - A ChordInstance Class
+    chord_instance.py - A Chord Instance Class
     Author:
         - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
         - Hoanh An (hoanhan@bennington.edu)
@@ -227,6 +227,7 @@ if __name__ == '__main__':
         temp_port = generate_random_port()
         temp_chord_instance = ChordInstance(temp_IP, temp_port)
 
+        # Collisions Handling
         # If there already exists ID, pass. Otherwise, join.
         if temp_chord_instance.ID not in ID_list:
             ID_list.append(temp_chord_instance.ID)
@@ -256,5 +257,6 @@ if __name__ == '__main__':
     successful_instances = (NUMBER_OF_NODES - 1) - collisions
 
     if len(ID_list) == successful_instances:
-        print("Correct")
-
+        print("The number of successful instances is correct.")
+    else:
+        print("Missing successful instances")
