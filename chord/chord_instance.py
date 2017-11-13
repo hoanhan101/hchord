@@ -132,7 +132,6 @@ class ChordInstance(object):
         self.predecessor = self.successor.predecessor
         self.successor.predecessor = self
 
-        # MARK!!! WHY???
         self.predecessor.successor = self
         self.predecessor.finger_table[0]['successor'] = self
         print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
@@ -220,7 +219,12 @@ if __name__ == '__main__':
 
     startup_chord_instance = ChordInstance(startup_IP, startup_port)
     startup_chord_instance.join(None)
+    ID_list.append(startup_chord_instance.ID)
     chord_instance_list.append(startup_chord_instance)
+
+    print("")
+    print("============ <WHEN STARTUP> ============")
+    print("")
 
     for i in range(NUMBER_OF_NODES - 1):
         temp_IP = generate_random_IP()
@@ -254,9 +258,6 @@ if __name__ == '__main__':
     print(sorted(ID_list))
 
     # Check the number of successful instances
-    successful_instances = (NUMBER_OF_NODES - 1) - collisions
+    successful_instances = NUMBER_OF_NODES - collisions
 
-    if len(ID_list) == successful_instances:
-        print("The number of successful instances is correct.")
-    else:
-        print("Missing successful instances")
+    print("The are {0}/{1} successful instance".format(successful_instances, NUMBER_OF_NODES))
