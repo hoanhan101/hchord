@@ -111,7 +111,6 @@ class ChordInstance(object):
             self.init_finger_table(NODE)
             self.update_others()
 
-            # MARK!!! DO WE NEED THIS?
             for i in range(1,m):
                 self.predecessor.update_finger_table(self,i)
         else:
