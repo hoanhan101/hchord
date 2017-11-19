@@ -12,8 +12,11 @@ from node import Node
 from utils import *
 from const import m
 from random import randint
-import SimpleXMLRPCServer
-import xmlrpclib
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc import client
+import pickle
+import zerorpc
+import socket
 
 class ChordInstance(object):
     """
@@ -41,6 +44,25 @@ class ChordInstance(object):
     def ping_back(self):
         return True
 
+    def get_ID(self):
+        return self.ID
+
+    def set_ID(self, value):
+        self.ID = value
+        # return self.ID
+
+    def return_instance(self):
+        return pickle.dumps(self)
+
+    def get_successor(self):
+        return self.successor.ID
+
+    def set_successor(self, i, dict):
+        self.print_finger_table()
+        temp_dict = pickle.loads(dict.data)
+        self.finger_table[i]['successor'] = temp_dict
+        self.print_finger_table()
+
     def create_finger_table(self):
         """
         Create a simple finger table of size m*2 with the start values generated
@@ -65,6 +87,7 @@ class ChordInstance(object):
         print("successor: {0}, predecessor: {1}".format(self.successor.ID, self.predecessor.ID))
         for i in range (0,m):
             print(self.finger_table[i]['start'], self.finger_table[i]['successor'].ID)
+
 
     def find_successor(self, ID):
         """
@@ -194,7 +217,6 @@ class ChordInstance(object):
                 p.update_finger_table(NODE, i)
                 self.print_finger_table()
 
-
 def generate_random_IP():
     START_RANGE = 0
     END_RANGE = 255
@@ -214,7 +236,42 @@ def generate_random_port():
     random_port_number = randint(START_RANGE, END_RANGE)
     return random_port_number
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+
+
+    # my_ip = '10.2.18.108'
+    # my_port = 9000
+    # my_id = 5
+    #
+    # my_chord_instance = ChordInstance(my_ip, my_port, my_id)
+    # my_chord_instance.set_ID(5)
+    # print(my_chord_instance.get_ID())
+
+    # server = SimpleXMLRPCServer((my_ip, my_port), allow_none=True)
+    # server.register_instance(my_chord_instance)
+    # server.serve_forever()
+
+    # s = zerorpc.Server(my_chord_instance)
+    # s.bind("tcp://0.0.0.0:9000")
+    # s.run()
+
+    # c = zerorpc.Client()
+    # c.connect('tcp://10.2.19.113:9000')
+    # print(c.get_id())
+
+
+
+
+
+
+
+    # client_ip = '10.2.24.78'
+    # client_port = 9001
+    # client = xmlrpclib.Server('http://{0}:{1}'.format(client_ip, client_port))
+    # if (client.ping_back()):
+    #     print('ID: {0}, Successor: {1}, Predecessor: {2}'.format(client.ID, client.successor.ID, client.predecessor.ID))
+
+
     # NUMBER_OF_NODES = 3
     #
     # chord_instance_list = []
@@ -273,12 +330,4 @@ if __name__ == '__main__':
     #
     # for node in chord_instance_list:
     #     print('successor of node {0} is {1}'.format(node.ID, node.successor.ID))
-    server = SimpleXMLRPCServer.SimpleXMLRPCServer(('10.2.24.6', 9000))
-    server.register_instance(chord_instance())
-    server.serve_forever()
 
-    client_ip = '10.2.24.78'
-    client_port = 9001
-    client = xmlrpclib.Server('http://{0}:{1}'.format(client_ip, client_port))
-    if (client.ping_back()):
-        print('ID: {0}, Successor: {1}, Predecessor: {2}'.format(client.ID, client.successor.ID, client.predecessor.ID))

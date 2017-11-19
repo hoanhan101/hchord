@@ -9,3 +9,4 @@
 """
 
 m = 3   # KEY_SPACE_SIZE (max 64)
+default_port = 9000
