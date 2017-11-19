@@ -46,7 +46,7 @@ class ChordInstance(object):
         finger_table = []
         for i in range(0,m):
             finger_table.append({})
-            finger_table[i]['start'] = constrain(self.NODE.ID + (2**i))
+            finger_table[i]['start'] = constrain(self.ID + (2**i))
             finger_table[i]['successor'] = self
         return finger_table
 
