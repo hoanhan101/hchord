@@ -28,7 +28,7 @@ class Node():
 
     def to_dict(self):
         """
-        Print information of a Node.
-        :return: String
+        Return a dictionary containing information of a Node.
+        :return: Dictionary
         """
-        return 'ID: {0}, IP: {1}, PORT: {2}'.format(self.ID, self.IP_ADDRESS, self.PORT)
+        return {'ID': self.ID, 'IP_ADDRESS': self.IP_ADDRESS, 'PORT': self.PORT}

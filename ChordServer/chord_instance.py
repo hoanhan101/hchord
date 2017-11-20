@@ -9,6 +9,7 @@
 """
 
 import pickle
+import zerorpc
 
 from node import Node
 from utils import *
@@ -19,7 +20,7 @@ class ChordInstance(object):
     Each Chord Instance contains the information about its node and maintains
     a finger table, its successor, and its predecessor.
     """
-    def __init__(self, IP_ADDRESS, PORT, ID):
+    def __init__(self, IP_ADDRESS, PORT):
         """
         Initialize a ChordInstance.
         :param IP_ADDRESS: String
@@ -29,8 +30,8 @@ class ChordInstance(object):
         self.IP_ADDRESS = IP_ADDRESS
         self.PORT = PORT
         self.NODE = Node(IP_ADDRESS, PORT)
-        self.ID = ID
-        # self.ID = self.NODE.ID
+        # self.ID = ID
+        self.ID = self.NODE.ID
         self.finger_table = self.create_finger_table()
 
         # set own successor and predecessor to self, i.e., the node is unattached
@@ -48,6 +49,25 @@ class ChordInstance(object):
     def get_IP(self):
         return serialize(self.IP_ADDRESS)
 
+    def set_successor(self, NODE):
+        NODE = deserialize(NODE)
+        self.finger_table[0]['successor'] = NODE
+        self.successor = NODE
+        print('Updated finger table:')
+        self.print_finger_table()
+
+    def find_successor_nw(self, NODE):
+        return serialize(self.find_successor(NODE))
+
+    def set_predecessor(self, NODE):
+        NODE = deserialize(NODE)
+        self.predecessor = NODE
+        print('Updated finger table:')
+        self.print_finger_table()
+
+    def get_predecessor(self):
+        return serialize(self.predecessor)
+
     def get_finger_table(self):
         return serialize(self.finger_table)
 
@@ -61,6 +81,11 @@ class ChordInstance(object):
         self.instance_list = deserialize(updated_list)
         for instance in self.instance_list:
             instance.print_finger_table()
+
+    def connect_and_update(self, NODE, i):
+        client = zerorpc.Client()
+        client.connect('tcp://{0}:{1}'.format(NODE.IP_ADDRESS, NODE.PORT))
+        client.update_finger_table(serialize(self),i)
 
     def create_finger_table(self):
         """
@@ -83,6 +108,7 @@ class ChordInstance(object):
         :return: None
         """
         print('finger_table of node {0}'.format(self.ID))
+        print('Address: {0}:{1}'.format(self.IP_ADDRESS, self.PORT))
         print("successor: {0}, predecessor: {1}".format(self.successor.ID, self.predecessor.ID))
         for i in range (0,m):
             print(self.finger_table[i]['start'], self.finger_table[i]['successor'].ID)
@@ -98,7 +124,7 @@ class ChordInstance(object):
         # print('-> Successor: {0}'.format(n0.finger_table[0]['successor'].ID))
         return n0.finger_table[0]['successor']
 
-    def find_predecessor(self,ID):
+    def find_predecessor(self, ID):
         """
         Find predecessor of a given ID.
         :param ID: Int
@@ -131,16 +157,18 @@ class ChordInstance(object):
         :param NODE: Node
         :return: None
         """
-        # print('')
-        # print('Node{0}.join({1}): joining {2} to {3}'.format(self.ID,NODE,self.ID,NODE))
-        # print('')
         if (NODE != None):
+            print('')
+            print('Node{0}.join({1}): joining {2} to {3}'.format(self.ID,NODE,self.ID,NODE.ID))
+            print('')
             self.init_finger_table(NODE)
             self.update_others()
 
             for i in range(1,m):
-                self.predecessor.update_finger_table(self,i)
+                # self.predecessor.update_finger_table(self,i)
+                self.connect_and_update(self.predecessor, i)
         else:
+            print('No such node exists! Creating a new ring...')
             for i in range(0,m):
                 self.finger_table[i]['successor'] = self
             self.predecessor = self
@@ -157,15 +185,27 @@ class ChordInstance(object):
         :param NODE: Node
         :return: None
         """
-        # print('Node{0}.init_finger_table({1}): init finger_table of node {2}'.format(self.ID,NODE.ID,self.ID))
         self.finger_table[0]['successor'] = NODE.find_successor(self.finger_table[0]['start'])
+
         self.successor = self.finger_table[0]['successor']
         # print('-> updated successor of finger_table[0][\'successor\'] of node {0} to {1}'.format(self.ID,self.finger_table[0]['successor'].ID))
-        self.predecessor = self.successor.predecessor
-        self.successor.predecessor = self
+        # self.predecessor = self.successor.predecessor
+        #
+        # self.successor.predecessor = self
+        # self.predecessor.successor = self
+        # self.predecessor.finger_table[0]['successor'] = self
 
-        self.predecessor.successor = self
-        self.predecessor.finger_table[0]['successor'] = self
+        successor = zerorpc.Client()
+        successor.connect('tcp://{0}:{1}'.format(self.successor.IP_ADDRESS, self.successor.PORT))
+        print('setting predecessor of successor({1}:{2}) to {0}'.format(self.ID, self.successor.IP_ADDRESS, self.successor.PORT))
+        self.predecessor = deserialize(successor.get_predecessor())
+        successor.set_predecessor(serialize(self))
+
+        predecessor = zerorpc.Client()
+        predecessor.connect('tcp://{0}:{1}'.format(self.predecessor.IP_ADDRESS, self.predecessor.PORT))
+        print('setting successor of predecessor({1}:{2}) to {0}'.format(self.ID, self.predecessor.IP_ADDRESS, self.predecessor.PORT))
+        predecessor.set_successor(serialize(self))
+
         # print('-> set predecessor of node {0} to {1}'.format(self.ID, self.predecessor.ID))
         # print('-> set predecessor of node {1} to {0}'.format(self.ID, self.finger_table[0]['successor'].ID))
 
@@ -197,10 +237,12 @@ class ChordInstance(object):
             # If p is not itself, which has already updated through init finger table,
             # then update finger tables of others
             if (p != self):
-                p.update_finger_table(self, i)
+                # p.update_finger_table(self, i)
+                self.connect_and_update(p, i)
             else:
                 p = p.predecessor
-                p.update_finger_table(self,i)
+                # p.update_finger_table(self,i)
+                self.connect_and_update(p, i)
 
     def update_finger_table(self, NODE, i):
         """
@@ -209,6 +251,7 @@ class ChordInstance(object):
         :param i: Int
         :return: None
         """
+        NODE = deserialize(NODE)
         # print('Node{0}.update_finger_table({1}, {2})'.format(self.ID, NODE.ID, i))
         if is_between(NODE.ID,self.finger_table[i]['start'], self.finger_table[i]['successor'].ID, including_start=True):
             self.finger_table[i]['successor'] = NODE
@@ -216,5 +259,6 @@ class ChordInstance(object):
             p = self.predecessor
             if (p != NODE):
                 # print('@update_finger_table: p = {0}'.format(p.ID))
-                p.update_finger_table(NODE, i)
-                # self.print_finger_table()
+                # p.update_finger_table(NODE, i)
+                self.connect_and_update(p, i)
+                self.print_finger_table()
