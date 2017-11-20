@@ -40,7 +40,6 @@ class ChordInstance(object):
         self.instance_list = []
 
     def is_alive(self):
-        print("I am alive")
         return True
 
     def get_ID(self):
@@ -146,11 +145,11 @@ class ChordInstance(object):
                 self.finger_table[i]['successor'] = self
             self.predecessor = self
 
-        try:
-            print("NODE {0} HAS SUCCESSFULLY JOINED".format(self.ID))
-            self.print_finger_table()
-        except Exception as e:
-            print(e)
+        # try:
+        #     print("NODE {0} HAS SUCCESSFULLY JOINED".format(self.ID))
+        #     self.print_finger_table()
+        # except Exception as e:
+        #     print(e)
 
     def init_finger_table(self, NODE):
         """
