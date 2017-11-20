@@ -8,7 +8,6 @@
     Date: 10/30/2017
 """
 
-import pickle
 import zerorpc
 
 from node import Node
@@ -30,15 +29,12 @@ class ChordInstance(object):
         self.IP_ADDRESS = IP_ADDRESS
         self.PORT = PORT
         self.NODE = Node(IP_ADDRESS, PORT)
-        # self.ID = ID
         self.ID = self.NODE.ID
         self.finger_table = self.create_finger_table()
 
         # set own successor and predecessor to self, i.e., the node is unattached
         self.successor = self
         self.predecessor = self
-
-        self.instance_list = []
 
     def is_alive(self):
         return True
@@ -73,14 +69,6 @@ class ChordInstance(object):
 
     def get_instance(self):
         return serialize(self)
-
-    def get_instance_list(self):
-        return serialize(self.instance_list)
-
-    def set_instance_list(self, updated_list):
-        self.instance_list = deserialize(updated_list)
-        for instance in self.instance_list:
-            instance.print_finger_table()
 
     def connect_and_update(self, NODE, i):
         client = zerorpc.Client()
@@ -189,11 +177,6 @@ class ChordInstance(object):
 
         self.successor = self.finger_table[0]['successor']
         # print('-> updated successor of finger_table[0][\'successor\'] of node {0} to {1}'.format(self.ID,self.finger_table[0]['successor'].ID))
-        # self.predecessor = self.successor.predecessor
-        #
-        # self.successor.predecessor = self
-        # self.predecessor.successor = self
-        # self.predecessor.finger_table[0]['successor'] = self
 
         successor = zerorpc.Client()
         successor.connect('tcp://{0}:{1}'.format(self.successor.IP_ADDRESS, self.successor.PORT))
