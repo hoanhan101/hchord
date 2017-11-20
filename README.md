@@ -1,4 +1,4 @@
-# Chord
+# Chord by Nidesh and Hoanh
 
 There are 2 versions: ChordLocal and ChordServer. Details are provided below.
 
@@ -7,7 +7,7 @@ ChordLocal has the main Chord logic and can be used locally, which makes it easy
 
 #### Design
 - `chord_instance.py` is a Chord Instance class, which has main Chord logic as described in the paper.
-- `cons.py` has a constant key space size m and default port 9000.
+- `cons.py` has a constant key space size m.
 - `node.py` is a Node class.
 - `utils.py` contains helper functions.
 
