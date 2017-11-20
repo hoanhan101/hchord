@@ -15,14 +15,15 @@ from const import *
 from utils import *
 from threading import Thread
 
-my_IP = '0.0.0.0'
+my_IP = '10.2.18.20'
+my_ID = 1
 
+# temporary instance list, use to startup a chord instance
+# real instance list is an attribute in chord instance
 instance_list = []
 
-# when startup
-my_chord_instance = ChordInstance(my_IP, default_port, 1)
+my_chord_instance = ChordInstance(my_IP, default_port, my_ID)
 instance_list.append(my_chord_instance)
-my_chord_instance.instance_list = instance_list
 
 class Server(Thread):
     def __init__(self):
@@ -53,31 +54,22 @@ class Client(Thread):
                 instance_list.append(my_chord_instance)
                 my_chord_instance.join(instance_list[0])
 
-                c.set_instance_list(serialize(instance_list))
+                # update my chord_instance list locally
                 my_chord_instance.set_instance_list(serialize(instance_list))
 
+                # update other instance list
                 for instance in my_chord_instance.instance_list:
-                    instance.print_finger_table()
+                    if instance.IP_ADDRESS != my_IP:
+                        temp_client = zerorpc.Client()
+                        temp_client.connect("tcp://{0}:{1}".format(instance.IP_ADDRESS, default_port))
+                        temp_client.set_instance_list(serialize(instance_list))
 
         except KeyboardInterrupt:
             print("Exit using KeyboardInterrupt")
 
 if __name__ == '__main__':
     server = Server()
-    server.start()
-
     client = Client()
+
+    server.start()
     client.start()
-
-    # server_chord_instance_3 = ChordInstance(my_IP, default_port, 3)
-    # server_chord_instance_6 = ChordInstance(my_IP, default_port, 6)
-
-    # instance_list.append(server_chord_instance_3)
-    # instance_list.append(server_chord_instance_6)
-
-    # server_chord_instance_3.join(instance_list[0])
-    # server_chord_instance_6.join(instance_list[0])
-
-    # for instance in my_chord_instance.instance_list:
-    #     instance.print_finger_table()
-
