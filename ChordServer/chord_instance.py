@@ -37,7 +37,10 @@ class ChordInstance(object):
         self.successor = self
         self.predecessor = self
 
-    def ping_back(self):
+        self.instance_list = []
+
+    def is_alive(self):
+        print("I am alive")
         return True
 
     def get_ID(self):
@@ -46,11 +49,19 @@ class ChordInstance(object):
     def get_IP(self):
         return serialize(self.IP_ADDRESS)
 
-    def return_finger_table(self):
+    def get_finger_table(self):
         return serialize(self.finger_table)
 
-    def return_instance(self):
+    def get_instance(self):
         return serialize(self)
+
+    def get_instance_list(self):
+        return serialize(self.instance_list)
+
+    def set_instance_list(self, updated_list):
+        self.instance_list = deserialize(updated_list)
+        for instance in self.instance_list:
+            instance.print_finger_table()
 
     def create_finger_table(self):
         """
@@ -208,58 +219,3 @@ class ChordInstance(object):
                 # print('@update_finger_table: p = {0}'.format(p.ID))
                 p.update_finger_table(NODE, i)
                 # self.print_finger_table()
-
-# if __name__ == '__main__':
-#     NUMBER_OF_NODES = 2
-#
-#     chord_instance_list = []
-#     ID_list = []
-#     collisions = 0
-#
-#     startup_IP = '0.0.0.0'
-#     startup_port = 0
-#
-#     startup_chord_instance = ChordInstance(startup_IP, startup_port)
-#     startup_chord_instance.join(None)
-#     ID_list.append(startup_chord_instance.ID)
-#     chord_instance_list.append(startup_chord_instance)
-#
-#     print("")
-#     print("============ <WHEN STARTUP> ============")
-#     print("")
-#
-#     for i in range(NUMBER_OF_NODES - 1):
-#         temp_IP = generate_random_IP()
-#         temp_port = generate_random_port()
-#         temp_chord_instance = ChordInstance(temp_IP, temp_port)
-#
-#         # Collisions Handling
-#         # If there already exists ID, pass. Otherwise, join.
-#         if temp_chord_instance.ID not in ID_list:
-#             ID_list.append(temp_chord_instance.ID)
-#             chord_instance_list.append(temp_chord_instance)
-#             temp_chord_instance.join(startup_chord_instance)
-#         else:
-#             collisions += 1
-#
-#     print("")
-#     print("============ <AFTER JOIN> ============")
-#     print("")
-#
-#     # Print fingers of all successful ChordInstance
-#     for chord_instance in chord_instance_list:
-#         chord_instance.print_finger_table()
-#
-#     # Collisions status
-#     if collisions == 0:
-#         print("ID IS WELL DISTRIBUTED")
-#     else:
-#         print("There exists {0} collisions".format(collisions))
-#
-#     # Print out the sorted ID list
-#     print(sorted(ID_list))
-#
-#     # Check the number of successful instances
-#     successful_instances = NUMBER_OF_NODES - collisions
-#
-#     print("The are {0}/{1} successful instance".format(successful_instances, NUMBER_OF_NODES))
