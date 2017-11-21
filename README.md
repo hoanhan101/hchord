@@ -31,7 +31,7 @@ one to use RPC. The server starts listening at the default port (9000) which can
 - The algorithms for the joining and updated finger tables are discussed in detail in the paper.
 
 #### Testing
-The chord implementation with networking is located in the [ChordServer](../tree/master/ChordServer) folder.
+The chord implementation with networking is located in the [ChordServer](/ChordServer) folder.
 
 First change the `my_IP` variable in the `peer.py` file to your IP address.
 
