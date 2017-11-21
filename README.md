@@ -1,6 +1,6 @@
 # Chord by Nidesh and Hoanh
 
-There are 2 versions: ChordLocal and ChordServer. Details are provided below.
+There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). Details are provided below.
 
 ## ChordLocal
 ChordLocal has the main Chord logic and can be used locally, which makes it easy for testing.
@@ -17,6 +17,9 @@ ChordLocal has the main Chord logic and can be used locally, which makes it easy
 - Run `chord_instance.py`. Tests are already written with 32 nodes and key space size equals to 16.
 
 ## ChordServer
+*This version is not working properly yet. The alternative version below is working but
+is implemented in a hacky way.*
+
 ChordServer implements TCP networking on top of ChordLocal, using RPC. We chose to use
  [zerorpc](http://www.zerorpc.io "zerorpc's Homepage") module for this purpose.
 
@@ -47,3 +50,21 @@ variable.
 continuous heartbeat messages and failing to connect to the given address. When it initializes, it begins listening for
 any other peer in the network to join.
 - You may then use the first node's IP address and port to connect to other nodes.
+
+## ChordServer (alt.)
+This is an alternative version of ChordServer. In this implementation, 
+each Chord Instance maintains a list of every other Chord Instance in the ring.
+
+#### Design
+- `peer.py` is a Peer class that acts as a server and a client. It has a thread to listen and another
+one to use RPC. 
+- Each peer maintains a list of other peers who has already joined.
+- The list gets updated every time a peer joins and synchronizes across all peers.
+- When a peer joins the network, it asks anyone for the list, do all the computation locally,
+then sends that updated list to everyone.
+- That way, everyone has the latest list and is ready to be called.
+
+#### Testing
+- `pip3 install zerorpc`
+- Run `peer.py` in different machines.
+- You will be ask for IP to join on each machine. Default port is 9000.
