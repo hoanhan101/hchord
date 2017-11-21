@@ -219,7 +219,7 @@ class ChordInstance(object):
 
             # If p is not itself, which has already updated through init finger table,
             # then update finger tables of others
-            if (p != self):
+            if (p.ID != self.ID):
                 # p.update_finger_table(self, i)
                 self.connect_and_update(p, i)
             else:
@@ -240,7 +240,7 @@ class ChordInstance(object):
             self.finger_table[i]['successor'] = NODE
             # print('-> updated the value of finger_table[{0}][\'successor\'] of Node {1} to {2}'.format(i,self.ID,NODE.ID))
             p = self.predecessor
-            if (p != NODE):
+            if (p.ID != NODE.ID):
                 # print('@update_finger_table: p = {0}'.format(p.ID))
                 # p.update_finger_table(NODE, i)
                 self.connect_and_update(p, i)

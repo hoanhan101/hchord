@@ -15,7 +15,7 @@ from const import *
 from utils import *
 from threading import Thread
 
-my_IP = '10.2.18.19'
+my_IP = '10.2.24.163'
 my_PORT = default_port
 
 
