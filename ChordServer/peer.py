@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 """
     peer.py - A Peer acts as a Server and a Client
