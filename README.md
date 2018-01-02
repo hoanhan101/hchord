@@ -1,5 +1,4 @@
-# Chord by Nidesh and Hoanh
-
+# Chord DHT
 There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). Details are provided below.
 
 ## ChordLocal
