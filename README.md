@@ -19,13 +19,13 @@ but you can test it with as many nodes and as big key space size as you want.
 - Run `chord_instance.py`. 
 
 ## ChordServer
-*This version is not working properly yet because of some strange behavior with rpc calls.
+*This version is not working properly yet because of some strange behavior with RPC calls.
 The alternative version below is working but is implemented in a hacky way.*
 
 ChordServer implements TCP networking on top of ChordLocal, using RPC. We chose to use
  [zerorpc](http://www.zerorpc.io "zerorpc's Homepage") module for this purpose.
 
-#### File
+#### Files
 - `peer.py` is a Peer class that acts as a server and a client. It has a thread to listen and another
 one to use RPC. The server starts listening at the default port (9000) which can be modified in `const.py`.
 - The client thread runs and asks the user which IP and port to connect to. The client then tries to connect
@@ -74,6 +74,6 @@ then sends that updated list to everyone.
 - You will be ask for IP to join on each machine. Default port is 9000.
 
 ## TODO
-- Fix rcp calls issue
+- Fix RPC calls issue
 - Dockerize everything
 - Test over AWS
