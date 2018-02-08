@@ -1,28 +1,31 @@
 # Chord DHT
-There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). Details are provided below.
+There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). 
+Details are provided below.
 
 ## ChordLocal
 ChordLocal has the main Chord logic and can be used locally, which makes it easy for testing.
 
-#### Design
+#### Files
 - `chord_instance.py` is a Chord Instance class, which has main Chord logic as described in the paper.
 - `const.py` has a constant key space size m.
 - `node.py` is a Node class.
 - `utils.py` contains helper functions.
 
-#### Testing
-- Change the key space size as you like in `const.py`.
-- Change the number of nodes as you like in `chord_instance.py`.
-- Run `chord_instance.py`. Tests are already written with 32 nodes and key space size equals to 16.
+#### Test
+- Tests are written using 32 nodes and key space size equals to 16,
+but you can test it with as many nodes and as big key space size as you want.
+- Configure the key space size in `const.py` under variable `m`.
+- Configure the number of nodes in `chord_instance.py` under variable `NUMBER_OF_NODES`.
+- Run `chord_instance.py`. 
 
 ## ChordServer
-*This version is not working properly yet. The alternative version below is working but
-is implemented in a hacky way.*
+*This version is not working properly yet because of some strange behavior with rpc calls.
+The alternative version below is working but is implemented in a hacky way.*
 
 ChordServer implements TCP networking on top of ChordLocal, using RPC. We chose to use
  [zerorpc](http://www.zerorpc.io "zerorpc's Homepage") module for this purpose.
 
-#### Design
+#### File
 - `peer.py` is a Peer class that acts as a server and a client. It has a thread to listen and another
 one to use RPC. The server starts listening at the default port (9000) which can be modified in `const.py`.
 - The client thread runs and asks the user which IP and port to connect to. The client then tries to connect
@@ -32,7 +35,7 @@ one to use RPC. The server starts listening at the default port (9000) which can
  Finger tables will be updated and a new node will be attached to our ring. 
 - The algorithms for the joining and updated finger tables are discussed in detail in the paper.
 
-#### Testing
+#### Test
 The chord implementation with networking is located in the [ChordServer](/ChordServer) folder.
 
 First change the `my_IP` variable in the `peer.py` file to your IP address.
@@ -51,10 +54,12 @@ any other peer in the network to join.
 - You may then use the first node's IP address and port to connect to other nodes.
 
 ## ChordServer (alt.)
-This is an alternative version of ChordServer. In this implementation, 
-each Chord Instance maintains a list of every other Chord Instance in the ring.
+This is an alternative version of ChordServer. 
+In this implementation, each Chord Instance maintains a list of every other Chord Instance in the ring.
+That is not how Chord should work. However, until the main version is fixed and working properly,
+just leave it here as a reminder.
 
-#### Design
+#### File
 - `peer.py` is a Peer class that acts as a server and a client. It has a thread to listen and another
 one to use RPC. 
 - Each peer maintains a list of other peers who has already joined.
@@ -63,7 +68,12 @@ one to use RPC.
 then sends that updated list to everyone.
 - That way, everyone has the latest list and is ready to be called.
 
-#### Testing
+#### Test
 - `pip3 install zerorpc`
 - Run `peer.py` in different machines.
 - You will be ask for IP to join on each machine. Default port is 9000.
+
+## TODO
+- Fix rcp calls issue
+- Dockerize everything
+- Test over AWS
