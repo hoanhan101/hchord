@@ -1,7 +1,7 @@
 # Chord
 
 This is an implementation of 
-[MIT's Chord](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf)
+[MIT's Chord](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf).
 
 There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). 
 Details are provided below.
