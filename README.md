@@ -1,7 +1,11 @@
 # Chord
 
 This is an implementation of 
-[MIT's Chord](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf).
+[MIT's Chord: A Scalable Peer-to-peer Lookup Service for Internet
+Applications](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf).
+
+The goal of the project is to gain a better understanding of a lookup service
+in distributed systems world.
 
 There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). 
 Details are provided below.
