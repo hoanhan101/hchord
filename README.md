@@ -13,15 +13,15 @@ Details are provided below.
 
 ## Table of Contents
 
-- [ChordLocal](#ChordLocal)
-  - [Files](#cl-file)
-  - [Testing](#cl-testing)
-- [ChordServer](#ChordServer)
-  - [Files](#cs-file)
-  - [Testing](#cs-testing)
-- [ChordServer (alt.)](#ChordServer-alt)
-  - [Files](#csa-file)
-  - [Testing](#csa-testing)
+- [ChordLocal](#chordlocal)
+  - [Files](#files)
+  - [Testing](#testing)
+- [ChordServer](#chordserver)
+  - [Files](#files-1)
+  - [Testing](#testing-1)
+- [ChordServer (alt.)](#chordserver-alt)
+  - [Files](#files-2)
+  - [Testing](#testing-2)
 - [TODO](#todo)
 
 ## ChordLocal
