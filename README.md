@@ -1,5 +1,9 @@
 # Chord
 
+![build-success](https://img.shields.io/badge/build-success-brightgreen.svg)
+![test-passing](https://img.shields.io/badge/test-passing-brightgreen.svg)
+![status-stable](https://img.shields.io/badge/status-stable-green.svg)
+
 **Chord** is a 
 [A Scalable Peer-to-peer Lookup Service for Internet
 Applications](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf).
