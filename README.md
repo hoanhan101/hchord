@@ -10,6 +10,8 @@ Applications](https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pd
 The goal of the project is to gain a better understanding of a lookup service
 in distributed systems world.
 
+![Demo](demo.png)
+
 ## Project Status
 
 There are 3 versions: ChordLocal, ChordServer and ChordServer (alt.). 
